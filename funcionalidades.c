@@ -1,6 +1,7 @@
 #include "funcionalidades.h"
 #include "registro.h"
 #include "utils.h"
+#include "fornecidas.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -127,5 +128,5 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
         free(nomesUnicos[i]);
     }
 
-    binarioNaTela(nomeBin);
+    BinarioNaTela(nomeBin);
 }

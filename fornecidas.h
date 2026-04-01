@@ -4,6 +4,6 @@
 // Funcoes fornecidas
 
 void scan_quote_string(char *str);
-void binarioNaTela(char *nomeArquivoBinario);
+void BinarioNaTela(char *nomeArquivoBinario);
 
 #endif

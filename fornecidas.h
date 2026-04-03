@@ -3,7 +3,7 @@
 
 // Funcoes fornecidas
 
-void scan_quote_string(char *str);
+void ScanQuoteString(char *str);
 void BinarioNaTela(char *nomeArquivoBinario);
 
 #endif

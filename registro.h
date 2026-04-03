@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-// Arquivo destinado a declarar as estruturas a serem usados no trabalho
+// Arquivo destinado a declarar as structs a serem usados no trabalho
 
 typedef struct {
     char status;
@@ -33,5 +33,6 @@ typedef struct {
 void escreveCabecalho(FILE *fp, cabecalho *cab);
 void escreveRegistro(FILE *fp, registro *reg);
 int leRegistro(FILE *fp, registro *reg);
+void imprimeRegistro(registro *reg);
 
 #endif

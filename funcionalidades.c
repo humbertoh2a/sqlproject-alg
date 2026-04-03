@@ -1,11 +1,74 @@
 #include "funcionalidades.h"
+#include "fornecidas.h"
 #include "registro.h"
 #include "utils.h"
-#include "fornecidas.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+// Verifica se um registro atende a todos os pares campo/valor fornecidos.
+// Implementa lógica AND entre os filtros e retorna 1 (sim) ou 0 (nao).
+int registroAtendeFiltros(registro *reg, char campos[][50], char valores[][100], int m) {
+    for (int j = 0; j < m; j++) {
+        if (strcmp(campos[j], "codEstacao") == 0) {
+            int val = (strcmp(valores[j], "NULO") == 0)
+                          ? -1
+                          : atoi(valores[j]);
+            if (reg->codEstacao != val)
+                return 0;
+        } else if (strcmp(campos[j], "codLinha") == 0) {
+            int val = (strcmp(valores[j], "NULO") == 0)
+                          ? -1
+                          : atoi(valores[j]);
+            if (reg->codLinha != val)
+                return 0;
+        } else if (strcmp(campos[j], "codProxEstacao") == 0) {
+            int val = (strcmp(valores[j], "NULO") == 0)
+                          ? -1
+                          : atoi(valores[j]);
+            if (reg->codProxEstacao != val)
+                return 0;
+        } else if (strcmp(campos[j], "distProxEstacao") == 0) {
+            int val = (strcmp(valores[j], "NULO") == 0)
+                          ? -1
+                          : atoi(valores[j]);
+            if (reg->distProxEstacao != val)
+                return 0;
+        } else if (strcmp(campos[j], "codLinhaIntegra") == 0) {
+            int val = (strcmp(valores[j], "NULO") == 0)
+                          ? -1
+                          : atoi(valores[j]);
+            if (reg->codLinhaIntegra != val)
+                return 0;
+        } else if (strcmp(campos[j], "codEstIntegra") == 0) {
+            int val = (strcmp(valores[j], "NULO") == 0)
+                          ? -1
+                          : atoi(valores[j]);
+            if (reg->codEstIntegra != val)
+                return 0;
+        } else if (strcmp(campos[j], "nomeEstacao") == 0) {
+            if (strcmp(valores[j], "NULO") == 0) {
+                if (reg->tamNomeEstacao != 0)
+                    return 0;
+            } else {
+                if (reg->nomeEstacao == NULL || strcmp(reg->nomeEstacao, valores[j]) != 0)
+                    return 0;
+            }
+        } else if (strcmp(campos[j], "nomeLinha") == 0) {
+            if (strcmp(valores[j], "NULO") == 0) {
+                if (reg->tamNomeLinha != 0)
+                    return 0;
+            } else {
+                if (reg->nomeLinha == NULL || strcmp(reg->nomeLinha, valores[j]) != 0)
+                    return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+// FUNCIONALIDADE 1
+// Converte CSV em arquivo binário seguindo o formato especificado.
 void funcionalidade1(char *nomeCsv, char *nomeBin) {
     FILE *arquivoCsv = fopen(nomeCsv, "r");
     if (arquivoCsv == NULL) {
@@ -30,7 +93,7 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
     escreveCabecalho(arquivoBin, &cab);
 
     char linha[200];
-    fgets(linha, sizeof(linha), arquivoCsv);
+    fgets(linha, sizeof(linha), arquivoCsv); // pula cabecalho CSV
 
     char *nomesUnicos[1000];
     int paresUnicosE1[1000];
@@ -48,11 +111,11 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
         reg.codEstacao = (campo != NULL) ? atoi(campo) : -1;
 
         campo = trataString(&ponteiroLinha);
-        if (campo != NULL) {
+        if (campo != NULL && strlen(campo) > 0) {
             reg.tamNomeEstacao = strlen(campo);
             reg.nomeEstacao = malloc(reg.tamNomeEstacao + 1);
             strcpy(reg.nomeEstacao, campo);
-            
+
             int existe = 0;
             for (int i = 0; i < cab.nroEstacoes; i++) {
                 if (strcmp(nomesUnicos[i], reg.nomeEstacao) == 0) {
@@ -60,7 +123,7 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
                     break;
                 }
             }
-            if (existe == 0) {
+            if (!existe) {
                 nomesUnicos[cab.nroEstacoes] = malloc(reg.tamNomeEstacao + 1);
                 strcpy(nomesUnicos[cab.nroEstacoes], reg.nomeEstacao);
                 cab.nroEstacoes++;
@@ -74,7 +137,7 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
         reg.codLinha = (campo != NULL) ? atoi(campo) : -1;
 
         campo = trataString(&ponteiroLinha);
-        if (campo != NULL) {
+        if (campo != NULL && strlen(campo) > 0) {
             reg.tamNomeLinha = strlen(campo);
             reg.nomeLinha = malloc(reg.tamNomeLinha + 1);
             strcpy(reg.nomeLinha, campo);
@@ -103,7 +166,7 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
                     break;
                 }
             }
-            if (existePar == 0) {
+            if (!existePar) {
                 paresUnicosE1[cab.nroParesEstacao] = reg.codEstacao;
                 paresUnicosE2[cab.nroParesEstacao] = reg.codProxEstacao;
                 cab.nroParesEstacao++;
@@ -113,8 +176,10 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
         escreveRegistro(arquivoBin, &reg);
         cab.proxRRN++;
 
-        if (reg.nomeEstacao != NULL) free(reg.nomeEstacao);
-        if (reg.nomeLinha != NULL) free(reg.nomeLinha);
+        if (reg.nomeEstacao != NULL)
+            free(reg.nomeEstacao);
+        if (reg.nomeLinha != NULL)
+            free(reg.nomeLinha);
     }
 
     cab.status = '1';
@@ -131,70 +196,48 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
     BinarioNaTela(nomeBin);
 }
 
-void imprimeRegistro(registro *reg) {
-    // A ordem de exibição é exata: codEstacao, nomeEstacao, codLinha, nomeLinha, codProxEstacao, distProxEstacao, codLinhaIntegra, codEstIntegra [cite: 191]
-    
-    if (reg->codEstacao == -1) printf("NULO ");
-    else printf("%d ", reg->codEstacao);
-
-    if (reg->tamNomeEstacao == 0 || reg->nomeEstacao == NULL) printf("NULO ");
-    else printf("%s ", reg->nomeEstacao);
-
-    if (reg->codLinha == -1) printf("NULO ");
-    else printf("%d ", reg->codLinha);
-
-    if (reg->tamNomeLinha == 0 || reg->nomeLinha == NULL) printf("NULO ");
-    else printf("%s ", reg->nomeLinha);
-
-    if (reg->codProxEstacao == -1) printf("NULO ");
-    else printf("%d ", reg->codProxEstacao);
-
-    if (reg->distProxEstacao == -1) printf("NULO ");
-    else printf("%d ", reg->distProxEstacao);
-
-    if (reg->codLinhaIntegra == -1) printf("NULO ");
-    else printf("%d ", reg->codLinhaIntegra);
-
-    if (reg->codEstIntegra == -1) printf("NULO\n");
-    else printf("%d\n", reg->codEstIntegra);
-}
-
+// FUNCIONALIDADE 2
+// Lista todos os registros ativos (nao removidos).
 void funcionalidade2(char *nomeBin) {
     FILE *fp = fopen(nomeBin, "rb");
     if (fp == NULL) {
-        printf("Falha no processamento do arquivo.\n"); // [cite: 194]
+        printf("Falha no processamento do arquivo.\n");
         return;
     }
 
     char status;
     fread(&status, sizeof(char), 1, fp);
     if (status == '0') {
-        printf("Falha no processamento do arquivo.\n"); // Verifica consistência [cite: 49]
+        printf("Falha no processamento do arquivo.\n");
         fclose(fp);
         return;
     }
-    
-    fseek(fp, 17, SEEK_SET); // Pula o cabeçalho (17 bytes) [cite: 62]
+
+    fseek(fp, 17, SEEK_SET);
 
     registro reg;
     int encontrou = 0;
-    
+
     while (leRegistro(fp, &reg)) {
-        if (reg.removido == '0') { // Ignora removidos logicamente [cite: 181]
+        if (reg.removido == '0') {
             imprimeRegistro(&reg);
             encontrou = 1;
         }
-        if (reg.nomeEstacao != NULL) free(reg.nomeEstacao);
-        if (reg.nomeLinha != NULL) free(reg.nomeLinha);
+        if (reg.nomeEstacao != NULL)
+            free(reg.nomeEstacao);
+        if (reg.nomeLinha != NULL)
+            free(reg.nomeLinha);
     }
 
     if (!encontrou) {
-        printf("Registro inexistente.\n"); // [cite: 193]
+        printf("Registro inexistente.\n");
     }
 
     fclose(fp);
 }
 
+// FUNCIONALIDADE 3
+// Executa buscas por pares campo/valor (AND entre pares) e imprime resultados.
 void funcionalidade3(char *nomeBin) {
     FILE *fp = fopen(nomeBin, "rb");
     if (fp == NULL) {
@@ -210,77 +253,142 @@ void funcionalidade3(char *nomeBin) {
         return;
     }
 
-    int n; // quantidade de vezes que a busca deve acontecer [cite: 231]
-    if(scanf("%d", &n) != 1) {
+    int n;
+    if (scanf("%d", &n) != 1) {
         fclose(fp);
         return;
     }
 
     for (int i = 0; i < n; i++) {
-        int m; // quantidade de pares nome/valor [cite: 232]
+        int m;
         scanf("%d", &m);
-        
+
         char campos[m][50];
         char valores[m][100];
-        
+
         for (int j = 0; j < m; j++) {
             scanf("%s", campos[j]);
-            scan_quote_string(valores[j]); // Função para ler strings com aspas ou NULO [cite: 213]
+            ScanQuoteString(valores[j]);
         }
 
-        fseek(fp, 17, SEEK_SET); // Volta pro começo dos registros pra cada busca
+        fseek(fp, 17, SEEK_SET);
+
         registro reg;
         int encontrou_algum = 0;
 
         while (leRegistro(fp, &reg)) {
             if (reg.removido == '0') {
-                int match = 1;
-                for (int j = 0; j < m; j++) {
-                    if (strcmp(campos[j], "codEstacao") == 0) {
-                        int val = (strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
-                        if (reg.codEstacao != val) match = 0;
-                    } else if (strcmp(campos[j], "codLinha") == 0) {
-                        int val = (strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
-                        if (reg.codLinha != val) match = 0;
-                    } else if (strcmp(campos[j], "codProxEstacao") == 0) {
-                        int val = (strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
-                        if (reg.codProxEstacao != val) match = 0;
-                    } else if (strcmp(campos[j], "distProxEstacao") == 0) {
-                        int val = (strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
-                        if (reg.distProxEstacao != val) match = 0;
-                    } else if (strcmp(campos[j], "codLinhaIntegra") == 0) {
-                        int val = (strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
-                        if (reg.codLinhaIntegra != val) match = 0;
-                    } else if (strcmp(campos[j], "codEstIntegra") == 0) {
-                        int val = (strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
-                        if (reg.codEstIntegra != val) match = 0;
-                    } else if (strcmp(campos[j], "nomeEstacao") == 0) {
-                        if (strcmp(valores[j], "NULO") == 0) {
-                            if (reg.tamNomeEstacao != 0) match = 0;
-                        } else {
-                            if (reg.nomeEstacao == NULL || strcmp(reg.nomeEstacao, valores[j]) != 0) match = 0;
-                        }
-                    } else if (strcmp(campos[j], "nomeLinha") == 0) {
-                        if (strcmp(valores[j], "NULO") == 0) {
-                            if (reg.tamNomeLinha != 0) match = 0;
-                        } else {
-                            if (reg.nomeLinha == NULL || strcmp(reg.nomeLinha, valores[j]) != 0) match = 0;
-                        }
-                    }
-                }
-                
-                if (match) {
+                if (registroAtendeFiltros(&reg, campos, valores, m)) {
                     imprimeRegistro(&reg);
                     encontrou_algum = 1;
                 }
             }
-            if (reg.nomeEstacao != NULL) free(reg.nomeEstacao);
-            if (reg.nomeLinha != NULL) free(reg.nomeLinha);
+            if (reg.nomeEstacao != NULL)
+                free(reg.nomeEstacao);
+            if (reg.nomeLinha != NULL)
+                free(reg.nomeLinha);
         }
-        
+
         if (!encontrou_algum) {
-            printf("Registro inexistente.\n"); // [cite: 242]
+            printf("Registro inexistente.\n");
         }
     }
+
     fclose(fp);
+}
+
+// FUNCIONALIDADE 4
+// Remoção lógica em lote: para N iterações, lê filtros e marca registros.
+// Implementa lista encadeada FIFO de removidos e sobrescreve dados com '#'.
+void funcionalidade4(char *nomeBin, int numRemocoes) {
+    FILE *fp = fopen(nomeBin, "rb+");
+    if (fp == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Lê cabeçalho completo
+    cabecalho cab;
+    fread(&cab.status, sizeof(char), 1, fp);
+    fread(&cab.topo, sizeof(int), 1, fp);
+    fread(&cab.proxRRN, sizeof(int), 1, fp);
+    fread(&cab.nroEstacoes, sizeof(int), 1, fp);
+    fread(&cab.nroParesEstacao, sizeof(int), 1, fp);
+
+    // Marca como inconsistente durante a operacao
+    cab.status = '0';
+    fseek(fp, 0, SEEK_SET);
+    escreveCabecalho(fp, &cab);
+    fflush(fp);
+
+    for (int iter = 0; iter < numRemocoes; iter++) {
+
+        int m;
+        scanf("%d", &m);
+
+        char campos[m][50];
+        char valores[m][100];
+
+        for (int j = 0; j < m; j++) {
+            scanf("%s", campos[j]);
+            ScanQuoteString(valores[j]);
+        }
+
+        fseek(fp, 17, SEEK_SET);
+
+        long rrnAtual = 0;
+        int removeuAlgo = 0;
+        registro reg;
+
+        while (leRegistro(fp, &reg)) {
+
+            if (reg.removido == '0' && registroAtendeFiltros(&reg, campos, valores, m)) {
+
+                long offsetReg = 17L + rrnAtual * 80L;
+
+                int novoProximo = cab.topo;
+
+                // O topo do cabeçalho passa a ser este registo que acabámos de remover
+                cab.topo = (int)rrnAtual;
+
+                fseek(fp, offsetReg, SEEK_SET);
+
+                // Escreve o registro removido no disco:
+                //   byte 0    : removido = '1'
+                //   bytes 1-4 : proximo  = -1  (novo final da fila)
+                //   bytes 5-79: '#'
+                char novoRemovido = '1';
+
+                fwrite(&novoRemovido, sizeof(char), 1, fp);
+                fwrite(&novoProximo, sizeof(int), 1, fp);
+
+                for (int k = 0; k < 75; k++) {
+                    fputc('#', fp);
+                }
+
+                removeuAlgo = 1;
+            }
+
+            if (reg.nomeEstacao != NULL)
+                free(reg.nomeEstacao);
+            if (reg.nomeLinha != NULL)
+                free(reg.nomeLinha);
+
+            rrnAtual++;
+        }
+
+        // Nenhum registro removido: encerra antes de completar n vezes
+        if (!removeuAlgo) {
+            break;
+        }
+    }
+
+    // Reescreve cabecalho com status '1' (consistente)
+    cab.status = '1';
+    fseek(fp, 0, SEEK_SET);
+    escreveCabecalho(fp, &cab);
+
+    fclose(fp);
+
+    BinarioNaTela(nomeBin);
 }

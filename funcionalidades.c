@@ -11,27 +11,33 @@
 int registroAtendeFiltros(registro *reg, char campos[][50], char valores[][100], int m) {
     for (int j = 0; j < m; j++) {
         if (strcmp(campos[j], "codEstacao") == 0) {
-            int val = (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
+            int val =
+                (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
             if (reg->codEstacao != val)
                 return 0;
         } else if (strcmp(campos[j], "codLinha") == 0) {
-            int val = (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
+            int val =
+                (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
             if (reg->codLinha != val)
                 return 0;
         } else if (strcmp(campos[j], "codProxEstacao") == 0) {
-            int val = (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
+            int val =
+                (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
             if (reg->codProxEstacao != val)
                 return 0;
         } else if (strcmp(campos[j], "distProxEstacao") == 0) {
-            int val = (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
+            int val =
+                (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
             if (reg->distProxEstacao != val)
                 return 0;
         } else if (strcmp(campos[j], "codLinhaIntegra") == 0) {
-            int val = (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
+            int val =
+                (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
             if (reg->codLinhaIntegra != val)
                 return 0;
         } else if (strcmp(campos[j], "codEstIntegra") == 0) {
-            int val = (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
+            int val =
+                (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) ? -1 : atoi(valores[j]);
             if (reg->codEstIntegra != val)
                 return 0;
         } else if (strcmp(campos[j], "nomeEstacao") == 0) {
@@ -284,15 +290,18 @@ void funcionalidade3(char *nomeBin) {
         if (!encontrou_algum) {
             printf("Registro inexistente.\n");
         }
+        if (i < n - 1) {
+            printf("\n");
+        }
     }
 
     fclose(fp);
 }
 
 // FUNCIONALIDADE 4
-// Recuperacao direta de um registro atraves de seu RRN (Acesso com fseek)
+// Recuperacao direta de um registro atraves de seu RRN
 void funcionalidade4(char *nomeBin, int rrn) {
-    FILE *fp = fopen(nomeBin, "rb"); // Aberto apenas para leitura
+    FILE *fp = fopen(nomeBin, "rb");
     if (fp == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -317,7 +326,7 @@ void funcionalidade4(char *nomeBin, int rrn) {
         } else {
             printf("Registro inexistente.\n");
         }
-        
+
         if (reg.nomeEstacao != NULL)
             free(reg.nomeEstacao);
         if (reg.nomeLinha != NULL)

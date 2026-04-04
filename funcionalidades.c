@@ -8,6 +8,7 @@
 
 // Verifica se um registro atende a todos os pares campo/valor fornecidos.
 // Implementa lógica AND entre os filtros e retorna 1 (sim) ou 0 (nao).
+// checa cada par campo/valor
 int registroAtendeFiltros(registro *reg, char campos[][50], char valores[][100], int m) {
     for (int j = 0; j < m; j++) {
         if (strcmp(campos[j], "codEstacao") == 0) {
@@ -41,6 +42,7 @@ int registroAtendeFiltros(registro *reg, char campos[][50], char valores[][100],
             if (reg->codEstIntegra != val)
                 return 0;
         } else if (strcmp(campos[j], "nomeEstacao") == 0) {
+
             if (valores[j][0] == '\0' || strcmp(valores[j], "NULO") == 0) {
                 if (reg->tamNomeEstacao != 0)
                     return 0;
@@ -62,7 +64,7 @@ int registroAtendeFiltros(registro *reg, char campos[][50], char valores[][100],
 }
 
 // FUNCIONALIDADE 1
-// Converte CSV em arquivo binário seguindo o formato especificado.
+// Converte CSV em arquivo binário seguindo o formato especificado
 void funcionalidade1(char *nomeCsv, char *nomeBin) {
     FILE *arquivoCsv = fopen(nomeCsv, "r");
     if (arquivoCsv == NULL) {
@@ -78,6 +80,7 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
     }
 
     cabecalho cab;
+    // Marca arquivo inconsistente enquanto grava os registros
     cab.status = '0';
     cab.topo = -1;
     cab.proxRRN = 0;
@@ -89,6 +92,7 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
     char linha[200];
     fgets(linha, sizeof(linha), arquivoCsv); // pula cabecalho CSV
 
+    // Arrays temporarios para contar nomes e pares unicos
     char *nomesUnicos[1000];
     int paresUnicosE1[1000];
     int paresUnicosE2[1000];
@@ -167,6 +171,7 @@ void funcionalidade1(char *nomeCsv, char *nomeBin) {
             }
         }
 
+        // Grava o registro convertido no arquivo binario
         escreveRegistro(arquivoBin, &reg);
         cab.proxRRN++;
 
@@ -276,6 +281,7 @@ void funcionalidade3(char *nomeBin) {
 
         while (leRegistro(fp, &reg)) {
             if (reg.removido == '0') {
+                // Confere os filtros
                 if (registroAtendeFiltros(&reg, campos, valores, m)) {
                     imprimeRegistro(&reg);
                     encontrou_algum = 1;

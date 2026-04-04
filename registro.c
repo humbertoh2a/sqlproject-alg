@@ -43,6 +43,7 @@ int leRegistro(FILE *fp, registro *reg) {
     // Faz a leitura na ordem e completa ate 80bytes
     int bytesLidos = 0;
 
+    // Confere se foi removido
     if (fread(&reg->removido, sizeof(char), 1, fp) != 1) {
         return 0;
     }

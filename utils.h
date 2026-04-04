@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 char *trataString(char **stringP);
-void limpaBuffer();
 void removeQuebraLinha(char *texto);
 
 #endif

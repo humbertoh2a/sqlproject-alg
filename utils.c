@@ -14,13 +14,7 @@ char *trataString(char **stringP) {
     return token;
 }
 
-void limpaBuffer() {
-    int c;
-    // Descarta o restante da linha deixado por scanf.
-    while ((c = getchar()) != '\n' && c != EOF);
-}
-
 void removeQuebraLinha(char *texto) {
-    // Remove caracteres de quebra de linha '\r' e '\n'
+    // Remove caracteres de quebra de linha \r' e '\n'
     texto[strcspn(texto, "\r\n")] = '\0';
 }

@@ -4,6 +4,6 @@
 void funcionalidade1(char *nomeCsv, char *nomeBin);
 void funcionalidade2(char *nomeBin);
 void funcionalidade3(char *nomeBin);
-void funcionalidade4(char *nomeBin, int numRemocoes);
+void funcionalidade4(char *nomeBin, int rrn);
 
 #endif
